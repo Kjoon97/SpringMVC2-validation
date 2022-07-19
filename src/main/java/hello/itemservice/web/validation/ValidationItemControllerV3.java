@@ -50,6 +50,13 @@ public class ValidationItemControllerV3 {
     @PostMapping("/add")   //@Validated를 넣으면 Bean validation이 그냥 적용 됨.(globalvalidator가 실행이 되면서 결과를 bindingResult에 넣어줌.
     public String addItem(@Validated @ModelAttribute Item item, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
+        if (item.getPrice() != null && item.getQuantity() != null) {  //-> 객체 검증.
+            int resultPrice = item.getPrice() * item.getQuantity();
+            if (resultPrice < 10000) {
+                bindingResult.reject("totalPriceMin", new Object[]{10000, resultPrice}, null);
+            }
+        }
+
         if (bindingResult.hasErrors()) {
             log.info("errors={}", bindingResult);
             return "validation/v3/addForm";
